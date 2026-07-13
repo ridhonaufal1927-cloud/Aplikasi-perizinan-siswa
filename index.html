@@ -1,1 +1,378 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Perizinan Siswa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .toast-enter { animation: slideIn 0.3s ease-out forwards; }
+        .toast-exit { animation: slideOut 0.3s ease-in forwards; }
+        @keyframes slideIn {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(100%); opacity: 0; }
+        }
+        /* Spinner animation */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #4f46e5;
+            width: 20px;
+            height: 20px;
+            -webkit-animation: spin 1s linear infinite; /* Safari */
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen pb-10">
 
+    <header class="bg-indigo-600 shadow-md text-white py-6">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <div>
+                <h1 class="text-2xl font-bold">Portal Perizinan Siswa</h1>
+                <p class="text-indigo-200 text-sm">Ajukan izin absensi dengan mudah dan terintegrasi</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h2 class="text-lg font-semibold border-b pb-3 mb-4 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Form Pengajuan
+                </h2>
+                
+                <form id="izinForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                        <input type="text" id="nama" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" placeholder="Masukkan nama...">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
+                        <input type="text" id="kelas" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" placeholder="Contoh: X MIPA 1">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kategori Izin</label>
+                        <select id="kategori" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white">
+                            <option value="" disabled selected>Pilih kategori...</option>
+                            <option value="Sakit">Sakit</option>
+                            <option value="Acara Keluarga">Acara Keluarga</option>
+                            <option value="Lomba">Lomba / Kompetisi</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mulai (Tanggal & Jam)</label>
+                        <input type="datetime-local" id="waktuMulai" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Sampai (Tanggal & Jam)</label>
+                        <input type="datetime-local" id="waktuAkhir" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Keterangan Tambahan</label>
+                        <textarea id="keterangan" rows="3" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all resize-none" placeholder="Tuliskan alasan detail..."></textarea>
+                    </div>
+
+                    <button type="submit" id="btnSubmit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2 mt-2 disabled:bg-indigo-400">
+                        <span id="btnText" class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            Ajukan Izin
+                        </span>
+                        <div id="btnLoader" class="loader hidden"></div>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 overflow-hidden flex flex-col h-full">
+                <div class="flex justify-between items-center border-b pb-3 mb-4">
+                    <h2 class="text-lg font-semibold flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                        </svg>
+                        Riwayat Pengajuan
+                    </h2>
+                    <button onclick="fetchData()" class="text-sm text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Segarkan
+                    </button>
+                </div>
+                
+                <div class="overflow-x-auto flex-1">
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 rounded-tl-lg">Info Siswa</th>
+                                <th scope="col" class="px-4 py-3">Kategori</th>
+                                <th scope="col" class="px-4 py-3">Waktu Pelaksanaan</th>
+                                <th scope="col" class="px-4 py-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelBody" class="divide-y divide-gray-100 relative">
+                            <!-- State Loading -->
+                            <tr id="loadingState">
+                                <td colspan="4" class="px-4 py-12 text-center text-gray-500">
+                                    <div class="flex flex-col items-center justify-center gap-3">
+                                        <div class="loader" style="border-top-color: #4f46e5; width: 30px; height: 30px;"></div>
+                                        <span>Memuat data dari server...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- State Kosong -->
+                            <tr id="emptyState" class="hidden">
+                                <td colspan="4" class="px-4 py-12 text-center text-gray-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                    </svg>
+                                    Belum ada data pengajuan izin.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        // ==========================================
+        // KONFIGURASI API (UBAH URL INI NANTINYA)
+        // ==========================================
+        // Ganti string di bawah ini dengan Web App URL dari Google Apps Script Anda!
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7I-mWYDEIMXMUZ2UjpcwBmfVPCZdy9dFtMVCMtMMR5J62GX99bfWnamIE9yTu-6jX/exec'; 
+
+        // Elemen DOM
+        const form = document.getElementById('izinForm');
+        const tabelBody = document.getElementById('tabelBody');
+        const emptyState = document.getElementById('emptyState');
+        const loadingState = document.getElementById('loadingState');
+        const toastContainer = document.getElementById('toastContainer');
+        const btnSubmit = document.getElementById('btnSubmit');
+        const btnText = document.getElementById('btnText');
+        const btnLoader = document.getElementById('btnLoader');
+
+        // Helper: Format Tanggal ke format Indonesia
+        function formatTanggalIndo(dateString) {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString; // Jika invalid, kembalikan string aslinya
+
+            const options = { 
+                weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            };
+            return date.toLocaleDateString('id-ID', options);
+        }
+
+        // Helper: Tampilkan Toast Notifikasi
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            
+            let bgColor = 'bg-green-500';
+            let icon = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+            
+            if (type === 'error') {
+                bgColor = 'bg-red-500';
+                icon = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+            }
+
+            toast.className = `toast-enter flex items-center w-full max-w-xs p-4 text-white ${bgColor} rounded-lg shadow-lg pointer-events-auto`;
+            toast.innerHTML = `
+                <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg bg-white/20">
+                    ${icon}
+                </div>
+                <div class="ml-3 text-sm font-medium">${message}</div>
+            `;
+
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.replace('toast-enter', 'toast-exit');
+                setTimeout(() => { if (toastContainer.contains(toast)) toastContainer.removeChild(toast); }, 300);
+            }, 4000);
+        }
+
+        // Fetch Data dari Google Sheets
+        async function fetchData() {
+            // Reset tabel, tampilkan loading
+            const barisData = tabelBody.querySelectorAll('.data-row');
+            barisData.forEach(row => row.remove());
+            emptyState.classList.add('hidden');
+            loadingState.classList.remove('hidden');
+
+            // Jika SCRIPT_URL belum diubah, tahan eksekusi dan beritahu pengguna
+            if(SCRIPT_URL === 'URL_WEB_APP_GOOGLE_APPS_SCRIPT_ANDA_DISINI') {
+                loadingState.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                emptyState.innerHTML = `<td colspan="4" class="px-4 py-12 text-center text-red-500 text-sm">
+                    ⚠️ Anda belum memasukkan SCRIPT_URL di dalam kode index.html.<br>Ikuti panduan instalasi untuk mendapatkan URL dari Google Apps Script.
+                </td>`;
+                return;
+            }
+
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const result = await response.json();
+
+                loadingState.classList.add('hidden');
+
+                if (result.status === 'success' && result.data.length > 0) {
+                    renderTabel(result.data);
+                } else {
+                    emptyState.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                loadingState.classList.add('hidden');
+                showToast('Gagal memuat data. Periksa koneksi internet.', 'error');
+            }
+        }
+
+        // Render data ke dalam tabel HTML
+        function renderTabel(dataIzin) {
+            dataIzin.forEach((izin) => {
+                const tr = document.createElement('tr');
+                tr.className = 'data-row hover:bg-gray-50/50 transition-colors group';
+                
+                let categoryColor = 'bg-blue-100 text-blue-800';
+                if(izin.kategori === 'Sakit') categoryColor = 'bg-red-100 text-red-800';
+                else if(izin.kategori === 'Lomba') categoryColor = 'bg-purple-100 text-purple-800';
+                else if(izin.kategori === 'Acara Keluarga') categoryColor = 'bg-green-100 text-green-800';
+
+                // Warna badge status
+                let statusBadge = `
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-yellow-50 text-yellow-700 border border-yellow-200">
+                        <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse"></span>
+                        ${izin.status}
+                    </span>`;
+                
+                if(izin.status.toLowerCase() === 'disetujui') {
+                     statusBadge = `
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                        Disetujui
+                    </span>`;
+                } else if (izin.status.toLowerCase() === 'ditolak') {
+                     statusBadge = `
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-red-50 text-red-700 border border-red-200">
+                        Ditolak
+                    </span>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <div class="font-medium text-gray-900">${izin.nama}</div>
+                        <div class="text-xs text-gray-500">Kelas: ${izin.kelas}</div>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${categoryColor}">
+                            ${izin.kategori}
+                        </span>
+                    </td>
+                    <td class="px-4 py-4 text-sm">
+                        <div class="text-gray-900"><strong>Mulai:</strong> ${formatTanggalIndo(izin.waktuMulai)}</div>
+                        <div class="text-gray-500 mt-1"><strong>Sampai:</strong> ${formatTanggalIndo(izin.waktuAkhir)}</div>
+                        <div class="text-xs text-gray-400 mt-2 line-clamp-1 group-hover:line-clamp-none transition-all" title="${izin.keterangan}">Ket: ${izin.keterangan}</div>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        ${statusBadge}
+                    </td>
+                `;
+                tabelBody.appendChild(tr);
+            });
+        }
+
+        // Event Listener untuk Submit
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault(); 
+            
+            if(SCRIPT_URL === 'URL_WEB_APP_GOOGLE_APPS_SCRIPT_ANDA_DISINI') {
+                showToast('URL Google Apps Script belum disetel di file HTML!', 'error');
+                return;
+            }
+
+            // Ambil data
+            const dataForm = {
+                nama: document.getElementById('nama').value.trim(),
+                kelas: document.getElementById('kelas').value.trim(),
+                kategori: document.getElementById('kategori').value,
+                waktuMulai: document.getElementById('waktuMulai').value,
+                waktuAkhir: document.getElementById('waktuAkhir').value,
+                keterangan: document.getElementById('keterangan').value.trim()
+            };
+
+            // Validasi waktu
+            if (new Date(dataForm.waktuAkhir) <= new Date(dataForm.waktuMulai)) {
+                showToast('Waktu selesai harus lebih dari waktu mulai!', 'error');
+                return;
+            }
+
+            // Ubah state tombol menjadi loading
+            btnSubmit.disabled = true;
+            btnText.classList.add('hidden');
+            btnLoader.classList.remove('hidden');
+
+            try {
+                // Kirim POST Request ke GAS Web App
+                // Note: Kita menggunakan text/plain (default) pada stringify agar tidak terkena CORS OPTIONS preflight issue di GAS
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(dataForm)
+                });
+
+                const result = await response.json();
+
+                if(result.status === 'success') {
+                    showToast('Pengajuan izin berhasil dikirim!');
+                    form.reset();
+                    fetchData(); // Refresh tabel setelah submit
+                } else {
+                    showToast('Gagal: ' + result.message, 'error');
+                }
+
+            } catch (error) {
+                console.error("Error submitting form:", error);
+                showToast('Terjadi kesalahan jaringan saat mengirim data.', 'error');
+            } finally {
+                // Kembalikan state tombol
+                btnSubmit.disabled = false;
+                btnText.classList.remove('hidden');
+                btnLoader.classList.add('hidden');
+            }
+        });
+
+        // Panggil fetch data pertama kali saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', fetchData);
+
+    </script>
+</body>
+</html>
